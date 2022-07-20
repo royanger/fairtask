@@ -1,3 +1,31 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* poppins-500 - latin */
+@font-face {
+	font-family: 'Poppins';
+	font-style: normal;
+	font-weight: 500;
+	src: local(''), url('/fonts/poppins-v20-latin-500.woff2') format('woff2'),
+		/* Super Modern Browsers */ url('/fonts/poppins-v20-latin-500.woff')
+			format('woff'); /* Modern Browsers */
+}
+
+/* poppins-700 - latin */
+@font-face {
+	font-family: 'Poppins';
+	font-style: normal;
+	font-weight: 700;
+	src: local(''), url('/fonts/poppins-v20-latin-700.woff2') format('woff2'),
+		/* Super Modern Browsers */ url('/fonts/poppins-v20-latin-700.woff')
+			format('woff'); /* Modern Browsers */
+}
+
+/* sfprodisplay - 700 */
+@font-face {
+	font-family: 'SF Pro Display';
+	font-style: normal;
+	font-weight: 700;
+	src: local(''), url('/fonts/sfprodisplay-700.woff') format('woff'); /* Modern Browsers */
+}
