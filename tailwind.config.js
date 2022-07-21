@@ -6,6 +6,7 @@ module.exports = {
 		fontFamily: {
 			poppins: ['Poppins', 'sans-serif'],
 			sfprodisplay: ['SF Pro Display', 'sans-serif'],
+			inter: ['Inter', 'sans-serif'],
 		},
 		extend: {
 			colors: {
