@@ -16,6 +16,7 @@ export default function Account() {
 	if (!session) {
 		return Router.push('/login');
 	}
+
 	console.log(session);
 	return (
 		<>

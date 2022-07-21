@@ -43,3 +43,11 @@
 body {
 	font-family: 'Poppins';
 }
+
+.or:before,
+.or:after {
+	background: #d1d1d6;
+	height: 1px;
+	flex: 1;
+	content: '';
+}
