@@ -38,13 +38,16 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
+  id              String    @id @default(cuid())
+  name            String?
+  email           String?   @unique
+  emailVerified   DateTime?
+  image           String?
+  accounts        Account[]
+  sessions        Session[]
+  tasks           Task[]
+  teamId          String?
+  team            Team?     @relation(fields: [teamId], references: [id])
 }
 
 model VerificationToken {
@@ -53,4 +56,37 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Team {
+   id          String   @id @default(cuid())
+   user        User[]
+   task        Task[]
+}
+
+model Task {
+   id          String   @id @default(cuid())
+   name        String
+   description String
+   value       Int
+   due         DateTime
+   teamId      String
+   team        Team     @relation(fields:[teamId], references: [id])
+   userId      String
+   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Reward {
+   id          String            @id @default(cuid())
+   title       String
+   points      Int
+   categoryId  String
+   category    RewardCategory    @relation(fields: [categoryId], references: [id])
+}
+
+model RewardCategory {
+   id          String   @id @default(cuid())
+   name        String
+   image       String
+   reward      Reward[]
 }
