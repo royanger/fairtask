@@ -1,14 +1,15 @@
-import { useSession, signOut } from 'next-auth/react';
+import { useHydratedSession } from '../utils/useHydratedSession';
+import { signOut } from 'next-auth/react';
 import Image from 'next/image';
 import { EditIcon, LogoutIcon } from '../components/icons';
 import Layout from '../components/ui/layout';
 import { NextPageWithLayout } from './_app';
 import { authOptions } from './api/auth/[...nextauth]';
-import { unstable_getServerSession as getServerSession} from 'next-auth';
+import { unstable_getServerSession as getServerSession } from 'next-auth';
 import { GetServerSideProps } from 'next';
 
 const Profile: NextPageWithLayout = () => {
-	const { data: session, status } = useSession();
+	const session = useHydratedSession();
 
 
 
@@ -75,7 +76,7 @@ Profile.getLayout = function getLayout(page: React.ReactElement) {
 
 export default Profile;
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps: GetServerSideProps = async context => {
 	const session = await getServerSession(
 		context.req,
 		context.res,
@@ -95,4 +96,4 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 			session: session,
 		},
 	};
-}
+};

@@ -1,4 +1,4 @@
-import { useSession, signIn, signOut } from 'next-auth/react';
+import { useHydratedSession } from '../../utils/useHydratedSession';
 import Layout from '../../components/ui/layout';
 import { NextPageWithLayout } from '../_app';
 import { authOptions } from '../api/auth/[...nextauth]';
@@ -6,7 +6,7 @@ import { unstable_getServerSession as getServerSession } from 'next-auth';
 import { GetServerSideProps } from 'next';
 
 const AddTask: NextPageWithLayout = () => {
-	const { data: session, status } = useSession();
+	const session = useHydratedSession();
 
 	return (
 		<>

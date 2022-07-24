@@ -8,7 +8,6 @@ export default function Layout({ children }: Layout) {
 	return (
 		<>
 			<div>
-				<p>layout comp</p>
 				{children}
 				<MobileMenu />
 			</div>

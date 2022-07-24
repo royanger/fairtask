@@ -1,7 +1,8 @@
-import { useSession, signIn, signOut } from 'next-auth/react';
+import { signIn, signOut } from 'next-auth/react';
+import { useHydratedSession } from '../../utils/useHydratedSession';
 
 export default function LoginButton() {
-	const { data: session } = useSession();
+	const session = useHydratedSession();
 
 	if (session) {
 		return (

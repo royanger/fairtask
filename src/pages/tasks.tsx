@@ -1,4 +1,3 @@
-import { useSession } from 'next-auth/react';
 import MobileMenu from '../components/menus/MobileMenu';
 import TasksHeader from '../components/tasks/TasksHeader';
 import TeamSelector from '../components/tasks/TeamSelector';
@@ -8,9 +7,10 @@ import { authOptions } from './api/auth/[...nextauth]';
 import { unstable_getServerSession as getServerSession } from 'next-auth';
 import { GetServerSideProps } from 'next';
 import Router from 'next/router';
+import { useHydratedSession } from '../utils/useHydratedSession';
 
 const Tasks: NextPageWithLayout = () => {
-	const { data: session, status } = useSession();
+	const session = useHydratedSession();
 
 	// if the user doesn't have a name, email and image set redirect
 	// to profile page to set those
