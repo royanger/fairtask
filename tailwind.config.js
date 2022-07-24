@@ -13,11 +13,13 @@ module.exports = {
 				green: {
 					200: '#B1C4C4',
 					300: '#83A1A1',
+					400: '#667373',
 					DEFAULT: '#324646',
 					500: '#324646',
 				},
 				blue: {
 					DEFAULT: '#5966DB',
+					700: '#0601B4',
 				},
 				black: {
 					DEFAULT: '#000000',
@@ -27,7 +29,9 @@ module.exports = {
 				},
 				grey: {
 					100: '#EAEBEC',
+					300: '#D1D1D6',
 					DEFAULT: '#D1D1D6',
+					700: '#ABABAB',
 				},
 				twitter: '#1da1f2',
 				github: '#4078c0',

@@ -60,6 +60,7 @@ model VerificationToken {
 
 model Team {
    id          String   @id @default(cuid())
+   creator     String
    user        User[]
    task        Task[]
 }
