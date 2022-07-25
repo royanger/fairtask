@@ -1,9 +1,9 @@
-import Layout from '../../components/ui/layout';
+import Layout from '@components/ui/layout';
 import { NextPageWithLayout } from '../_app';
 import { authOptions } from '../api/auth/[...nextauth]';
 import { unstable_getServerSession as getServerSession } from 'next-auth';
 import { GetServerSideProps } from 'next';
-import { useHydratedSession } from '../../utils/useHydratedSession';
+import { useHydratedSession } from '@utils/customHooks';
 
 const AddRewards: NextPageWithLayout = () => {
 	const session = useHydratedSession();

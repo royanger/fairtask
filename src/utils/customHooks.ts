@@ -1,5 +1,4 @@
 import { useSession } from 'next-auth/react';
-
 export const useHydratedSession = () => {
 	const { data: session } = useSession();
 	if (!session || !session.user)

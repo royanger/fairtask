@@ -1,15 +1,16 @@
-import MobileMenu from '../components/menus/MobileMenu';
-import TasksHeader from '../components/tasks/TasksHeader';
-import TeamSelector from '../components/tasks/TeamSelector';
-import Layout from '../components/ui/layout';
 import { NextPageWithLayout } from './_app';
 import { authOptions } from './api/auth/[...nextauth]';
 import { unstable_getServerSession as getServerSession } from 'next-auth';
 import { GetServerSideProps } from 'next';
 import Router from 'next/router';
-import { trpc } from '../utils/trpc';
-import { CheckmarkIcon } from '../components/icons';
-import { useHydratedSession } from '../utils/useHydratedSession';
+import { trpc } from '@utils/trpc';
+import { useHydratedSession, useUserInfoCheck } from '@utils/customHooks';
+// import components
+import MobileMenu from '@components/menus/MobileMenu';
+import TasksHeader from '@components/tasks/TasksHeader';
+import TeamSelector from '@components/tasks/TeamSelector';
+import Layout from '@components/ui/layout';
+import { CheckmarkIcon } from '@components/icons';
 
 const Tasks: NextPageWithLayout = () => {
 	const session = useHydratedSession();

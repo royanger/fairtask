@@ -1,7 +1,6 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import { trpc } from '../utils/trpc';
-import LoginButton from '../components/ui/login-button';
+import LoginButton from '@components/ui/login-button';
 import Image from 'next/image';
 
 type TechnologyCardProps = {

@@ -1,5 +1,5 @@
 import { getProviders, signIn } from 'next-auth/react';
-import { GitHubIcon, TwitterIcon } from '../components/icons';
+import { GitHubIcon, TwitterIcon } from '@components/icons';
 
 interface Providers {
 	providers: {
@@ -36,7 +36,6 @@ const brandColors: { [index: string]: any } = {
 };
 
 export default function Login({ providers }: Providers) {
-	// console.log(providers);
 	return (
 		<div className="min-h-screen flex flex-col items-center">
 			<div
