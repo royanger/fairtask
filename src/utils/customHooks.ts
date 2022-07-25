@@ -13,13 +13,16 @@ export const useHydratedSession = () => {
 };
 
 export const useUserInfoCheck = (userId: string) => {
-	const { data: userInfo } = trpc.useQuery([
+	const { data: userInfo, isLoading } = trpc.useQuery([
 		'user.userInfo',
 		{ userId: userId },
 	]);
 
 	return {
-		hasEmail: userInfo?.email ? true : false,
-		hasProfileImage: userInfo?.image ? true : false,
+		isLoading: isLoading,
+		userInfo: {
+			hasEmail: userInfo?.email ? true : false,
+			hasProfileImage: userInfo?.image ? true : false,
+		},
 	};
 };

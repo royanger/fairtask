@@ -11,6 +11,7 @@ import type { AppProps } from 'next/app';
 
 // importing css
 import '../styles/globals.css';
+import { ToastContainer } from 'react-toastify';
 
 export type NextPageWithLayout = NextPage & {
 	getLayout?: (page: React.ReactElement) => React.ReactNode;
@@ -29,6 +30,11 @@ const MyApp = ({
 	return (
 		<SessionProvider session={session}>
 			{getLayout(<Component {...pageProps} />)}
+			<ToastContainer
+				position="top-center"
+				autoClose={10000}
+				theme="colored"
+			/>
 		</SessionProvider>
 	);
 };

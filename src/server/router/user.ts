@@ -22,4 +22,20 @@ export const userRouter = createRouter()
 				},
 			});
 		},
+	})
+	.mutation('userEdit', {
+		input: z.object({
+			userId: z.string().cuid(),
+			email: z.string().email(),
+		}),
+		async resolve({ input, ctx }) {
+			return await ctx.prisma.user.update({
+				where: {
+					id: input.userId,
+				},
+				data: {
+					email: input.email,
+				},
+			});
+		},
 	});
