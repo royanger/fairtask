@@ -2,7 +2,7 @@ import { createRouter } from './context';
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 
-export const teamRouter = createRouter()
+export const userRouter = createRouter()
 	.middleware(async ({ ctx, next }) => {
 		// Any queries or mutations after this middleware will
 		// raise an error unless there is a current session
@@ -11,22 +11,14 @@ export const teamRouter = createRouter()
 		}
 		return next();
 	})
-	.mutation('createTeam', {
+	.query('userInfo', {
 		input: z.object({
-			userId: z.string(),
+			userId: z.string().cuid(),
 		}),
 		async resolve({ input, ctx }) {
-			const results = await ctx.prisma.team.create({
-				data: {
-					creator: input.userId,
-				},
-			});
-			return await ctx.prisma.user.update({
+			return await ctx.prisma.user.findUnique({
 				where: {
 					id: input.userId,
-				},
-				data: {
-					teamId: results.id,
 				},
 			});
 		},
