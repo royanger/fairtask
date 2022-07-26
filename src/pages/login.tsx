@@ -1,4 +1,5 @@
-import { getProviders, signIn } from 'next-auth/react';
+import * as React from 'react';
+import { getCsrfToken, getProviders, signIn } from 'next-auth/react';
 import { GitHubIcon, TwitterIcon } from '@components/icons';
 
 interface Providers {
@@ -36,6 +37,14 @@ const brandColors: { [index: string]: any } = {
 };
 
 export default function Login({ providers }: Providers) {
+	const [csrfToken, setCrsfToken] = React.useState<string>();
+
+	React.useEffect(() => {
+		getCsrfToken()
+			.catch(e => console.error(e))
+			.then(res => setCrsfToken(res as string));
+	}, []);
+
 	return (
 		<div className="min-h-screen flex flex-col items-center">
 			<div
@@ -87,7 +96,7 @@ export default function Login({ providers }: Providers) {
 								<input
 									type="hidden"
 									name="csrfToken"
-									value="3aa550e9eec3716c077f949857b02990ce76c667e31d653d138d01198a2cc767"
+									value={csrfToken}
 								/>
 								<label
 									className="text-lg pb-2"

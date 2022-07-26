@@ -2,6 +2,7 @@ import type { NextPage } from 'next';
 import Head from 'next/head';
 import LoginButton from '@components/ui/login-button';
 import Image from 'next/image';
+import Link from 'next/link';
 
 type TechnologyCardProps = {
 	name: string;
@@ -10,8 +11,6 @@ type TechnologyCardProps = {
 };
 
 const Home: NextPage = () => {
-	const hello = trpc.useQuery(['example.hello', { text: 'from tRPC' }]);
-
 	return (
 		<>
 			<Head>
@@ -53,17 +52,18 @@ const Home: NextPage = () => {
 					</p>
 				</div>
 				<div className="flex items-center justify-center mb-6">
-					<a
-						href="/login"
-						className="bg-green text-white font-poppins text-xl px-20 py-3 rounded-[75px]"
-					>
-						Get Started
-					</a>
+					<Link href="/login">
+						<button className="bg-green text-white font-poppins text-xl px-20 py-3 rounded-[75px]">
+							Get Started
+						</button>
+					</Link>
 				</div>
 				<div className="flex items-center justify-center">
-					<a href="/login" className="text-green underline font-inter">
-						Existing account? Log in
-					</a>
+					<Link href="/login">
+						<button className="text-green underline font-inter">
+							Existing account? Log in
+						</button>
+					</Link>
 				</div>
 
 				<LoginButton />
