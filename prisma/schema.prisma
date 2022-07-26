@@ -38,16 +38,18 @@ model Session {
 }
 
 model User {
-  id              String    @id @default(cuid())
+  id              String      @id @default(cuid())
   name            String?
-  email           String?   @unique
+  email           String?     @unique
   emailVerified   DateTime?
   image           String?
   accounts        Account[]
   sessions        Session[]
   tasks           Task[]
+  invites         Invites[]
   teamId          String?
-  team            Team?     @relation(fields: [teamId], references: [id])
+  points          Int         @default(0)
+  team            Team?       @relation(fields: [teamId], references: [id])
 }
 
 model VerificationToken {
@@ -90,4 +92,11 @@ model RewardCategory {
    name        String
    image       String
    reward      Reward[]
+}
+
+model Invites {
+   id          String   @id @default(cuid())
+   userId      String
+   user        User     @relation(fields: [userId], references: [id])
+   email       String
 }
