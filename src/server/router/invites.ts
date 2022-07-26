@@ -2,7 +2,7 @@ import { createRouter } from './context';
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 
-export const teamRouter = createRouter()
+export const inviteRouter = createRouter()
 	.middleware(async ({ ctx, next }) => {
 		// Any queries or mutations after this middleware will
 		// raise an error unless there is a current session
@@ -11,44 +11,43 @@ export const teamRouter = createRouter()
 		}
 		return next();
 	})
-	.query('getTeam', {
+	.query('getInvites', {
 		input: z.object({
-			userId: z.string().cuid(),
+			email: z.string().email().nullish(),
 		}),
 		async resolve({ input, ctx }) {
-			const data = await ctx.prisma.user.findUnique({
+			if (!input.email) {
+				return null;
+			}
+			return ctx.prisma.invites.findMany({
 				where: {
-					id: input.userId,
+					email: input.email,
 				},
-				select: {
-					teamId: true,
-				},
-			});
-
-			if (!data?.teamId) return null;
-			return await ctx.prisma.user.findMany({
-				where: {
-					teamId: data.teamId,
+				include: {
+					user: true,
 				},
 			});
 		},
 	})
-	.mutation('createTeam', {
+	.mutation('acceptInvite', {
 		input: z.object({
 			userId: z.string().cuid(),
+			inviteId: z.string().cuid(),
+			teamId: z.string().cuid(),
 		}),
 		async resolve({ input, ctx }) {
-			const results = await ctx.prisma.team.create({
-				data: {
-					creator: input.userId,
-				},
-			});
-			return await ctx.prisma.user.update({
+			await ctx.prisma.user.update({
 				where: {
 					id: input.userId,
 				},
 				data: {
-					teamId: results.id,
+					teamId: input.teamId,
+				},
+			});
+
+			await ctx.prisma.invites.delete({
+				where: {
+					id: input.inviteId,
 				},
 			});
 		},

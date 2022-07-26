@@ -3,10 +3,16 @@ import { NextPageWithLayout } from '../_app';
 import { authOptions } from '../api/auth/[...nextauth]';
 import { unstable_getServerSession as getServerSession } from 'next-auth';
 import { GetServerSideProps } from 'next';
-import { useHydratedSession } from '@utils/customHooks';
+import { useHydratedSession, useUserInfoCheck } from '@utils/customHooks';
+import { displayToast } from '@utils/displayToast';
 
 const AddRewards: NextPageWithLayout = () => {
 	const session = useHydratedSession();
+	const { isLoading, userInfo } = useUserInfoCheck(session.user.id);
+
+	if (!isLoading && userInfo.hasEmail === false) {
+		displayToast();
+	}
 
 	return (
 		<>

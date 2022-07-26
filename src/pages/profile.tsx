@@ -9,11 +9,13 @@ import Link from 'next/link';
 import { useHydratedSession, useUserInfoCheck } from '@utils/customHooks';
 import { NextPageWithLayout } from './_app';
 import { authOptions } from './api/auth/[...nextauth]';
-import { EditIcon, LogoutIcon } from '@components/icons';
+import { EditIcon, LogoutIcon, PlusIcon } from '@components/icons';
 import Layout from '@components/ui/layout';
 import { ProfileButton } from '@components/ui/ProfileButton';
 import { displayToast } from '@utils/displayToast';
 import { trpc } from '@utils/trpc';
+import { ImportNotification } from '@components/profile/InviteNotification';
+import { HouseholdMembers } from '@components/profile/HouseholdMembers';
 
 const Profile: NextPageWithLayout = () => {
 	const session = useHydratedSession();
@@ -23,13 +25,6 @@ const Profile: NextPageWithLayout = () => {
 		displayToast();
 	}
 
-	// TODO stored
-	// const mutation = trpc.useMutation(['team.createTeam']);
-
-	// async function handleClick() {
-	// 	mutation.mutate({ userId: 'cl5v44ctg0439nswjkhocnr3t' });
-	// }
-
 	return (
 		<>
 			<div className="p-4">
@@ -37,7 +32,7 @@ const Profile: NextPageWithLayout = () => {
 				<div className="relative">
 					<div className="flex items-center justify-center pt-7 ">
 						<div className="border-2 border-grey rounded-full w-[74px] h-[74px]">
-							{session?.user?.image ? (
+							{session?.user?.image && (
 								<Image
 									src={session.user.image}
 									alt={`${session.user.name}'s Profile Image`}
@@ -45,8 +40,6 @@ const Profile: NextPageWithLayout = () => {
 									height={72}
 									className="rounded-full "
 								/>
-							) : (
-								''
 							)}
 						</div>
 						<div className="absolute top-3 translate-x-10">
@@ -82,7 +75,8 @@ const Profile: NextPageWithLayout = () => {
 					<ProfileButton icon="checkmark">Add a Task</ProfileButton>
 					<ProfileButton icon="star">Add a Reward</ProfileButton>
 				</div>
-				<div className=""></div>
+				<ImportNotification />
+				<HouseholdMembers />
 			</div>
 		</>
 	);

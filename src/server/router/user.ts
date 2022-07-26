@@ -23,7 +23,38 @@ export const userRouter = createRouter()
 			});
 		},
 	})
-	.mutation('userEdit', {
+	.query('getTeam', {
+		input: z.object({
+			userId: z.string().cuid(),
+		}),
+		async resolve({ input, ctx }) {
+			return ctx.prisma.user.findUnique({
+				where: {
+					id: input.userId,
+				},
+				select: {
+					team: true,
+				},
+			});
+		},
+	})
+	.mutation('updateName', {
+		input: z.object({
+			userId: z.string().cuid(),
+			name: z.string().min(1),
+		}),
+		async resolve({ input, ctx }) {
+			return await ctx.prisma.user.update({
+				where: {
+					id: input.userId,
+				},
+				data: {
+					name: input.name,
+				},
+			});
+		},
+	})
+	.mutation('updateEmail', {
 		input: z.object({
 			userId: z.string().cuid(),
 			email: z.string().email(),
@@ -34,6 +65,20 @@ export const userRouter = createRouter()
 					id: input.userId,
 				},
 				data: {
+					email: input.email,
+				},
+			});
+		},
+	})
+	.mutation('addHouseholdMember', {
+		input: z.object({
+			userId: z.string().cuid(),
+			email: z.string().email(),
+		}),
+		async resolve({ input, ctx }) {
+			return await ctx.prisma.invites.create({
+				data: {
+					userId: input.userId,
 					email: input.email,
 				},
 			});

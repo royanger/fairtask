@@ -10,28 +10,73 @@ import { NextPageWithLayout } from '../_app';
 import { authOptions } from '../api/auth/[...nextauth]';
 import Layout from '@components/ui/layout';
 import { trpc } from '@utils/trpc';
+import { FormButton } from '@components/ui/FormButton';
 
-interface FormData {
-	email: string;
-}
+const nameFormSchema = z.object({
+	name: z.string().min(1),
+});
+
+type NameFormData = z.infer<typeof nameFormSchema>;
+
+const emailFormSchema = z.object({
+	email: z.string().email(),
+});
+
+type EmailFormData = z.infer<typeof emailFormSchema>;
 
 const EditProfile: NextPageWithLayout = () => {
 	const session = useHydratedSession();
-	const updateUserMutation = trpc.useMutation(['user.userEdit']);
+	const updateNameMutation = trpc.useMutation(['user.updateName']);
+	const updateEmailMutation = trpc.useMutation(['user.updateEmail']);
 
 	const {
-		register,
-		handleSubmit,
-		formState: { errors },
-	} = useForm<FormData>();
+		register: registerName,
+		handleSubmit: handleSubmitName,
+		formState: {
+			errors: errorsName,
+			isSubmitSuccessful: isSubmitSuccessfulName,
+		},
+		setError: setErrorName,
+	} = useForm<NameFormData>();
 
-	const onSubmit = handleSubmit(data => {
-		console.log('edit profile data', data);
+	const onSubmitName = handleSubmitName(data => {
+		const validation = nameFormSchema.safeParse(data);
+		if (validation.success) {
+			updateNameMutation.mutate({
+				userId: session.user.id,
+				name: data.name,
+			});
+		} else {
+			setErrorName('name', {
+				type: 'custom',
+				message: 'Please enter a valid name.',
+			});
+		}
+	});
 
-		updateUserMutation.mutate({
-			userId: session.user.id,
-			email: data.email,
-		});
+	const {
+		register: registerEmail,
+		handleSubmit: handleSubmitEmail,
+		formState: {
+			errors: errorsEmail,
+			isSubmitSuccessful: isSubmitSuccessfulEmail,
+		},
+		setError: setErrorEmail,
+	} = useForm<EmailFormData>();
+
+	const onSubmitEmail = handleSubmitEmail(data => {
+		const validation = emailFormSchema.safeParse(data);
+		if (validation.success) {
+			updateEmailMutation.mutate({
+				userId: session.user.id,
+				email: data.email,
+			});
+		} else {
+			setErrorEmail('email', {
+				type: 'custom',
+				message: 'Please enter a valid email address.',
+			});
+		}
 	});
 
 	return (
@@ -59,20 +104,41 @@ const EditProfile: NextPageWithLayout = () => {
 						{session?.user?.email}
 					</p>
 				</div>
-				<div>
-					<form onSubmit={onSubmit}>
-						<div className="border-[1px] border-grey-100 p-2 flex flex-col">
+				<div className="border-[1px] border-grey-100 mt-10 mb-12 p-4 shadow-md">
+					<form onSubmit={onSubmitName}>
+						<div className=" p-2 flex flex-col">
 							<div className="flex flex-row">
-								<label htmlFor="title">Email</label>
+								<label htmlFor="title">Name</label>
 								<input
-									{...register('email', { required: true })}
+									{...registerName('name', { required: true })}
 									className="border-[1px] border-grey-700 "
 								/>
 							</div>
 						</div>
 						<div>
-							<button type="submit">Save</button>
+							<FormButton>Update Name</FormButton>
+							{isSubmitSuccessfulName ? 'Name update' : ''}
 						</div>
+						<div>{errorsName.name && errorsName.name.message}</div>
+					</form>
+				</div>
+
+				<div className="border-[1px] border-grey-100">
+					<form onSubmit={onSubmitEmail}>
+						<div className=" p-2 flex flex-col">
+							<div className="flex flex-row">
+								<label htmlFor="title">Email</label>
+								<input
+									{...registerEmail('email', { required: true })}
+									className="border-[1px] border-grey-700 "
+								/>
+							</div>
+						</div>
+						<div>
+							<FormButton>Update Email</FormButton>
+							{isSubmitSuccessfulEmail ? 'Email updated' : ''}
+						</div>
+						<div>{errorsEmail.email && errorsEmail.email.message}</div>
 					</form>
 				</div>
 			</div>
