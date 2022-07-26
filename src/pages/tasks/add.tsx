@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useHydratedSession } from '@utils/customHooks';
+import { useHydratedSession, useUserInfoCheck } from '@utils/customHooks';
 import Layout from '@components/ui/layout';
 import { NextPageWithLayout } from '../_app';
 import { authOptions } from '../api/auth/[...nextauth]';
@@ -8,7 +8,7 @@ import { GetServerSideProps } from 'next';
 import { useForm } from 'react-hook-form';
 import { DayPicker } from 'react-day-picker';
 import { format } from 'date-fns';
-import 'react-day-picker/dist/style.css';
+
 import {
 	AssignIcon,
 	CalendarIcon,
@@ -17,6 +17,7 @@ import {
 	StarIcon,
 } from '@components/icons';
 import { trpc } from '@utils/trpc';
+import { displayToast } from '@utils/displayToast';
 
 interface FormData {
 	title: string;
@@ -27,6 +28,11 @@ const AddTask: NextPageWithLayout = () => {
 	const session = useHydratedSession();
 	const [selectedDate, setSelectedDate] = React.useState<Date>();
 	const [value, setValue] = React.useState(0);
+	const { isLoading, userInfo } = useUserInfoCheck(session.user.id);
+
+	if (!isLoading && userInfo.hasEmail === false) {
+		displayToast();
+	}
 
 	const addTaskMutation = trpc.useMutation(['tasks.addTask']);
 

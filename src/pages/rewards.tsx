@@ -1,4 +1,4 @@
-import { useHydratedSession } from '@utils/customHooks';
+import { useHydratedSession, useUserInfoCheck } from '@utils/customHooks';
 import Layout from '@components/ui/layout';
 import { NextPageWithLayout } from './_app';
 import { authOptions } from './api/auth/[...nextauth]';
@@ -7,9 +7,15 @@ import { GetServerSideProps } from 'next';
 import Image from 'next/image';
 import RewardHeader from '@components/rewards/RewardsHeader';
 import Router from 'next/router';
+import { displayToast } from '@utils/displayToast';
 
 const Rewards: NextPageWithLayout = () => {
 	const session = useHydratedSession();
+	const { isLoading, userInfo } = useUserInfoCheck(session.user.id);
+
+	if (!isLoading && userInfo.hasEmail === false) {
+		displayToast();
+	}
 
 	function handleAdd() {
 		return Router.push('/rewards/add');

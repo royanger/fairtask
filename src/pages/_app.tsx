@@ -3,6 +3,7 @@ import * as React from 'react';
 import { withTRPC } from '@trpc/next';
 import superjson from 'superjson';
 import { SessionProvider } from 'next-auth/react';
+import { ToastContainer } from 'react-toastify';
 
 // importing types
 import type { AppRouter } from '../server/router';
@@ -11,7 +12,8 @@ import type { AppProps } from 'next/app';
 
 // importing css
 import '../styles/globals.css';
-import { ToastContainer } from 'react-toastify';
+import 'react-day-picker/dist/style.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 export type NextPageWithLayout = NextPage & {
 	getLayout?: (page: React.ReactElement) => React.ReactNode;

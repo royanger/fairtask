@@ -2,7 +2,6 @@ import { signOut } from 'next-auth/react';
 import Image from 'next/image';
 import { unstable_getServerSession as getServerSession } from 'next-auth';
 import { GetServerSideProps } from 'next';
-import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Link from 'next/link';
 
@@ -13,25 +12,15 @@ import { authOptions } from './api/auth/[...nextauth]';
 import { EditIcon, LogoutIcon } from '@components/icons';
 import Layout from '@components/ui/layout';
 import { ProfileButton } from '@components/ui/ProfileButton';
+import { displayToast } from '@utils/displayToast';
 import { trpc } from '@utils/trpc';
-import { useEffect } from 'react';
 
 const Profile: NextPageWithLayout = () => {
 	const session = useHydratedSession();
 	const { isLoading, userInfo } = useUserInfoCheck(session.user.id);
 
-	const ToastMessage = () => (
-		<Link href="/profile/edit">
-			No email provided. Please update your Profile to receive household
-			invites.
-		</Link>
-	);
-
-	const notify = () =>
-		toast.error(<ToastMessage />, { toastId: 'stringToStopDupes' });
-
-	if (!isLoading && userInfo?.hasEmail === false) {
-		notify();
+	if (!isLoading && userInfo.hasEmail === false) {
+		displayToast();
 	}
 
 	// TODO stored
@@ -43,11 +32,6 @@ const Profile: NextPageWithLayout = () => {
 
 	return (
 		<>
-			{/* <ToastContainer
-				position="top-center"
-				autoClose={10000}
-				theme="colored"
-			/> */}
 			<div className="p-4">
 				<h1 className="text-xl  font-poppins">Your Account</h1>
 				<div className="relative">

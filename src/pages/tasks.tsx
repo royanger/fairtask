@@ -5,8 +5,7 @@ import { GetServerSideProps } from 'next';
 import Router from 'next/router';
 import { trpc } from '@utils/trpc';
 import { useHydratedSession, useUserInfoCheck } from '@utils/customHooks';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { displayToast } from '@utils/displayToast';
 
 // import components
 import MobileMenu from '@components/menus/MobileMenu';
@@ -17,16 +16,10 @@ import { CheckmarkIcon } from '@components/icons';
 
 const Tasks: NextPageWithLayout = () => {
 	const session = useHydratedSession();
-	const userInfoCheck = useUserInfoCheck(session.user.id);
+	const { isLoading, userInfo } = useUserInfoCheck(session.user.id);
 
-	const notify = () =>
-		toast.error(
-			'No email provided. Please update your Profile to receive household invites',
-			{ toastId: 'stringToStopDupes' }
-		);
-
-	if (userInfoCheck.hasEmail === false) {
-		notify();
+	if (!isLoading && userInfo.hasEmail === false) {
+		displayToast();
 	}
 
 	const { data: tasks } = trpc.useQuery([
@@ -48,11 +41,6 @@ const Tasks: NextPageWithLayout = () => {
 
 	return (
 		<div className="min-h-screen">
-			<ToastContainer
-				position="top-center"
-				autoClose={10000}
-				theme="colored"
-			/>
 			<div>
 				<TasksHeader
 					title="Tasks"
