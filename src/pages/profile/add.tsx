@@ -43,7 +43,7 @@ const AddHouseholdMember: NextPageWithLayout = () => {
 	const onSubmitName = handleSubmit(async data => {
 		const validation = memberSchema.safeParse(data);
 		if (validation.success) {
-			if (!teamData?.team) {
+			if (!teamData?.teamId) {
 				await createTeamMutation.mutate({ userId: session.user.id });
 			}
 
