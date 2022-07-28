@@ -10,6 +10,7 @@ import PlusIcon from './PlusIcon';
 import StarIcon from './StarIcon';
 import TwitterIcon from './TwitterIcon';
 import UploadIcon from './UploadIcon';
+import { UserIcon } from './UserIcon';
 
 export {
 	AssignIcon,
@@ -24,4 +25,5 @@ export {
 	StarIcon,
 	TwitterIcon,
 	UploadIcon,
+	UserIcon,
 };
