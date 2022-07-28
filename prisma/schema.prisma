@@ -45,7 +45,8 @@ model User {
   image           String?
   accounts        Account[]
   sessions        Session[]
-  tasks           Task[]
+  tasks           Task[]      @relation("owner")
+  assigned        Task[]      @relation("assigned")
   invites         Invites[]
   teamId          String?
   points          Int         @default(0)
@@ -73,10 +74,13 @@ model Task {
    description String
    value       Int
    due         DateTime
+   completed   Boolean  @default(false)
    teamId      String
    team        Team     @relation(fields:[teamId], references: [id])
    userId      String
-   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+   user        User     @relation("owner", fields: [userId], references: [id], onDelete: Cascade)
+   assignedId  String?
+   assigned    User?    @relation("assigned",fields: [assignedId], references: [id], onDelete: Cascade)
 }
 
 model Reward {
