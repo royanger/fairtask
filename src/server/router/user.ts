@@ -33,7 +33,7 @@ export const userRouter = createRouter()
 					id: input.userId,
 				},
 				select: {
-					team: true,
+					teamId: true,
 				},
 			});
 		},

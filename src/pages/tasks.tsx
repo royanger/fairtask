@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { NextPageWithLayout } from './_app';
 import { authOptions } from './api/auth/[...nextauth]';
 import { unstable_getServerSession as getServerSession } from 'next-auth';
@@ -10,11 +11,12 @@ import { displayToast } from '@utils/displayToast';
 // import components
 import MobileMenu from '@components/menus/MobileMenu';
 import TasksHeader from '@components/tasks/TasksHeader';
-import TeamSelector from '@components/tasks/TeamSelector';
+import { TeamSelector } from '@components/tasks/TeamSelector';
 import Layout from '@components/ui/layout';
-import { CheckmarkIcon } from '@components/icons';
+import { TaskItem } from '@components/tasks/TaskItem';
 
 const Tasks: NextPageWithLayout = () => {
+	const [selectedMember, setSelectedMember] = React.useState(null);
 	const session = useHydratedSession();
 	const { isLoading, userInfo } = useUserInfoCheck(session.user.id);
 
@@ -22,16 +24,15 @@ const Tasks: NextPageWithLayout = () => {
 		displayToast();
 	}
 
+	// TODO this needs to be updated by the household member selection, for
+	// task filtering
 	const { data: tasks } = trpc.useQuery([
 		'tasks.getAllTasks',
-		{ userId: session.user.id },
+		{
+			userId: session.user.id,
+			assigned: selectedMember !== 'both' ? selectedMember : null,
+		},
 	]);
-
-	// if the user doesn't have a name, email and image set redirect
-	// to profile page to set those
-	// if (!session?.user?.image || !session.user.email || !session.user.name) {
-	// 	return Router.push('/profile');
-	// }
 
 	// using a callback function here so that child component can be reused
 	// when adding a task
@@ -48,10 +49,13 @@ const Tasks: NextPageWithLayout = () => {
 					buttonCallback={handleAdd}
 				/>
 			</div>
-			<div>
-				<TeamSelector />
+			<div className="px-4">
+				<TeamSelector
+					selectedMember={selectedMember}
+					setSelectedMember={setSelectedMember}
+				/>
 			</div>
-			<div>
+			<div className="mt-6">
 				<h2 className="bg-green-400 text-white text-3xl leading p-10 py-2">
 					To-Do
 				</h2>
@@ -60,16 +64,13 @@ const Tasks: NextPageWithLayout = () => {
 				<ul>
 					{tasks?.map(task => {
 						return (
-							<li
-								className="flex flex-row items-center py-2 border-[1px] border-grey-300"
+							<TaskItem
 								key={task.id}
-							>
-								<button className="m-1  bg-green rounded-full p-1">
-									<CheckmarkIcon className="h-5 w-auto text-white" />
-								</button>
-								<span className="grow ml-4">{task.name}</span>
-								<span className="w-16">{task.value} pts</span>
-							</li>
+								id={task.id}
+								name={task.name}
+								points={task.value}
+								completed={task.completed}
+							/>
 						);
 					})}
 				</ul>

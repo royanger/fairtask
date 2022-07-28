@@ -4,6 +4,7 @@ import { withTRPC } from '@trpc/next';
 import superjson from 'superjson';
 import { SessionProvider } from 'next-auth/react';
 import { ToastContainer } from 'react-toastify';
+import { ReactQueryDevtools } from 'react-query/devtools';
 
 // importing types
 import type { AppRouter } from '../server/router';
@@ -12,7 +13,7 @@ import type { AppProps } from 'next/app';
 
 // importing css
 import '../styles/globals.css';
-import 'react-day-picker/dist/style.css';
+import 'react-datepicker/dist/react-datepicker.css';
 import 'react-toastify/dist/ReactToastify.css';
 
 export type NextPageWithLayout = NextPage & {
@@ -37,6 +38,7 @@ const MyApp = ({
 				autoClose={10000}
 				theme="colored"
 			/>
+			<ReactQueryDevtools initialIsOpen={false} />
 		</SessionProvider>
 	);
 };

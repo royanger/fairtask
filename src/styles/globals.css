@@ -51,3 +51,16 @@ body {
 	flex: 1;
 	content: '';
 }
+
+/* hide and style radio buttons - for household assignment */
+[type='radio'] {
+	position: absolute;
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+[type='radio']:checked + span,
+[type='radio']:checked + div {
+	outline: 4px solid #eea1c5;
+	border-radius: 9999px;
+}

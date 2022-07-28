@@ -26,13 +26,27 @@ export const tasksRouter = createRouter()
 
 	.query('getAllTasks', {
 		input: z.object({
-			userId: z.string(),
+			userId: z.string().cuid(),
+			assigned: z.string().cuid().nullish(),
 		}),
 		async resolve({ input, ctx }) {
+			console.log('assigned', input.assigned);
+			const assignedId =
+				input.assigned !== null
+					? [{ userId: input.userId }, { assignedId: input.assigned }]
+					: [{ userId: input.userId }];
 			return await ctx.prisma.task.findMany({
 				where: {
-					userId: input.userId,
+					AND: assignedId,
 				},
+				orderBy: [
+					{
+						completed: 'asc',
+					},
+					{
+						name: 'desc',
+					},
+				],
 			});
 		},
 	})
@@ -44,8 +58,10 @@ export const tasksRouter = createRouter()
 			teamId: z.string(),
 			value: z.number(),
 			date: z.date(),
+			assigned: z.string().cuid().nullish(),
 		}),
 		async resolve({ input, ctx }) {
+			console.log('input', input);
 			return await ctx.prisma.task.create({
 				data: {
 					userId: input.userId,
@@ -54,6 +70,40 @@ export const tasksRouter = createRouter()
 					value: input.value,
 					due: input.date,
 					teamId: input.teamId,
+					assignedId: input.assigned,
+				},
+			});
+		},
+	})
+	.mutation('completeTask', {
+		input: z.object({
+			taskId: z.string().cuid(),
+		}),
+
+		async resolve({ input, ctx }) {
+			return await ctx.prisma.task.update({
+				where: {
+					id: input.taskId,
+				},
+				data: {
+					completed: true,
+				},
+			});
+		},
+	})
+	.mutation('uncompleteTask', {
+		input: z.object({
+			taskId: z.string().cuid(),
+		}),
+		async resolve({ input, ctx }) {
+			console.log('removing complete status');
+
+			return await ctx.prisma.task.update({
+				where: {
+					id: input.taskId,
+				},
+				data: {
+					completed: false,
 				},
 			});
 		},

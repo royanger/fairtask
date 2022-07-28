@@ -1,14 +1,14 @@
 import * as React from 'react';
+import { unstable_getServerSession as getServerSession } from 'next-auth';
+import { GetServerSideProps } from 'next';
+import { Controller, useForm } from 'react-hook-form';
+import DatePicker from 'react-datepicker';
+
+// add components and utils
 import { useHydratedSession, useUserInfoCheck } from '@utils/customHooks';
 import Layout from '@components/ui/layout';
 import { NextPageWithLayout } from '../_app';
 import { authOptions } from '../api/auth/[...nextauth]';
-import { unstable_getServerSession as getServerSession } from 'next-auth';
-import { GetServerSideProps } from 'next';
-import { useForm } from 'react-hook-form';
-import { DayPicker } from 'react-day-picker';
-import { format } from 'date-fns';
-
 import {
 	AssignIcon,
 	CalendarIcon,
@@ -18,122 +18,159 @@ import {
 } from '@components/icons';
 import { trpc } from '@utils/trpc';
 import { displayToast } from '@utils/displayToast';
+import TasksHeader from '@components/tasks/TasksHeader';
+import { FormButton } from '@components/ui/FormButton';
+import { AssignMember } from '@components/tasks/AssignMember';
+import Router from 'next/router';
 
 interface FormData {
 	title: string;
 	description: string;
+	date: Date;
+	value: number;
+	assignedMember: string;
 }
 
 const AddTask: NextPageWithLayout = () => {
 	const session = useHydratedSession();
-	const [selectedDate, setSelectedDate] = React.useState<Date>();
-	const [value, setValue] = React.useState(0);
 	const { isLoading, userInfo } = useUserInfoCheck(session.user.id);
 
 	if (!isLoading && userInfo.hasEmail === false) {
 		displayToast();
 	}
 
-	const addTaskMutation = trpc.useMutation(['tasks.addTask']);
+	const { data: team, isLoading: userTeamLoading } = trpc.useQuery([
+		'user.getTeam',
+		{ userId: session.user.id },
+	]);
+	const addTaskMutation = trpc.useMutation(['tasks.addTask'], {
+		onSuccess: data => Router.push('/tasks'),
+	});
 
 	const {
 		register,
 		handleSubmit,
+		control,
 		watch,
+		setValue,
 		formState: { errors },
-	} = useForm<FormData>();
+	} = useForm<FormData>({
+		defaultValues: {
+			value: 0,
+		},
+	});
 
-	const onSubmit = handleSubmit(data => {
-		console.log('form data', data, value);
+	const onSubmit = handleSubmit(async data => {
+		const assignedId =
+			data.assignedMember === 'both' ? null : data.assignedMember;
 
-		addTaskMutation.mutate({
+		await addTaskMutation.mutate({
 			userId: session.user.id,
 			title: data.title,
 			description: data.description,
-			value: value,
-			date: selectedDate,
-			teamId: 'cl5xfr1ew011440wjzinpcuj9',
+			value: data.value,
+			date: data.date,
+			teamId: team?.teamId!,
+			assigned: assignedId,
 		});
 	});
 
-	let footer = 'Please select a date';
-	if (selectedDate) {
-		footer = `You picked ${format(selectedDate, 'PP')}`;
-	}
-
-	let formattedDate = 'DD/MM/YY';
-	if (selectedDate) formattedDate = format(selectedDate, 'ee/LL/yy');
-
-	const handleValueChange = (type: 'increment' | 'decrement') => {
-		if (type === 'decrement' && value === 0) {
-			// error that you can not decrease below 0
-			return;
-		}
-
-		if (type === 'increment') setValue(value + 5);
-		if (type === 'decrement') setValue(value - 5);
+	const handleValueChange = (type: string) => {
+		// const currValue = watch('value');
+		console.log('watch', typeof watch('value'));
+		let newValue = 0;
+		if (type === 'increment') newValue = watch('value') + 5;
+		if (type === 'decrement') newValue = watch('value') - 5;
+		setValue('value', newValue);
 	};
 
 	return (
 		<>
-			<h1>Add Tasks</h1>
+			<TasksHeader
+				title="Add Task"
+				buttonType="link"
+				buttonCallback={onSubmit}
+			/>
 
-			<form onSubmit={onSubmit} className="">
-				<div className="border-[1px] border-grey-100 p-2 flex flex-col">
-					<div className="flex flex-row">
-						<label htmlFor="title">Title</label>
+			<form onSubmit={onSubmit} className="px-2">
+				<div className="border-[1px] border-grey-100 py-4 px-3 flex flex-col rounded-3xl mb-4">
+					<div className="flex flex-row mb-4">
+						<label htmlFor="title" className="mr-2">
+							Title
+						</label>
 						<input
 							{...register('title', { required: true })}
-							className="border-[1px] border-grey-700 "
+							className="bg-grey-50 w-full py-1 px-2 text-grey-900"
 						/>
 					</div>
 
 					<div className="flex flex-row">
-						<label htmlFor="description">Description</label>
+						<label htmlFor="description" className="mr-2">
+							Description
+						</label>
 						<input
 							{...register('description', { required: true })}
-							className="border-[1px] border-grey-700 "
+							className="bg-grey-50 w-full py-1 px-2 text-grey-900"
 						/>
 					</div>
 				</div>
-				<div className="border-[1px] border-grey-100 p-2 flex flex-row">
-					<AssignIcon className="h-4 w-auto" />
-					<div className="">Assign:</div>
-				</div>
+				<AssignMember register={register} />
 
-				<div className="border-[1px] border-grey-100 p-2 flex flex-row">
-					<StarIcon className="h-4 w-auto" />
-					<div className="">Value:</div>
-					<div className="border-[1px] border-grey-700 px-4">{value}</div>
+				<div className="border-[1px] border-grey-100 py-4 px-3 flex flex-row items-center rounded-3xl mb-4">
+					<StarIcon className="h-4 w-auto text-yellow-500 mr-2" />
+					<div className="mr-4">Value:</div>
+
+					<input
+						{...register('value', {
+							required: true,
+							min: { value: 0, message: 'too low' },
+							max: 99999999,
+						})}
+						type="number"
+						className="bg-grey-50 w-20 text-center py-1 text-grey-900"
+					/>
+					<p>{errors.value?.message}</p>
+
 					<button
 						type="button"
 						onClick={() => handleValueChange('increment')}
+						className="bg-green border-0 rounded-full p-2 text-white ml-4"
 					>
 						<PlusIcon className="h-4 w-auto" />
 					</button>
 					<button
 						type="button"
 						onClick={() => handleValueChange('decrement')}
+						className="bg-green border-0 rounded-full p-2 text-white ml-4"
 					>
 						<MinusIcon className="h-4 w-auto" />
 					</button>
 				</div>
 
-				<div className="border-[1px] border-grey-100 p-2 flex flex-row">
-					<CalendarIcon className="h-4 w-auto" />
-					<div className="">
-						Due:
-						{formattedDate}
-						<DayPicker
-							mode="single"
-							selected={selectedDate}
-							onSelect={setSelectedDate}
-							footer={footer}
-						/>
+				<div className="border-[1px] border-grey-100 py-4 px-3 flex flex-row items-center rounded-3xl mb-4">
+					<div className="h-5">
+						<CalendarIcon className="h-5 w-auto mr-2" />
 					</div>
+					<label htmlFor="date" className="mr-4">
+						{' '}
+						Due:
+					</label>
+					<Controller
+						control={control}
+						name="date"
+						render={({ field }) => (
+							<DatePicker
+								placeholderText="Select date"
+								onChange={date => field.onChange(date)}
+								selected={field.value}
+								required={true}
+							/>
+						)}
+					/>
 				</div>
-
-				<button type="submit">Submit</button>
+				<div className="flex items-center justify-center">
+					<FormButton>Submit</FormButton>
+				</div>
 			</form>
 		</>
 	);
