@@ -47,13 +47,13 @@ export const TaskItem = ({ id, name, points, completed }: TaskItem) => {
 				className="flex flex-row items-center py-2 border-[1px] border-grey-300"
 				key={id}
 			>
-				<form onSubmit={e => handleUncompleteTask(e)}>
+				<form onSubmit={e => handleUncompleteTask(e)} className="mx-3">
 					<button className="m-1  bg-green rounded-full p-1" type="submit">
 						<CheckmarkIcon className="h-5 w-auto text-white" />
 					</button>
 				</form>
-				<span className="grow ml-4">{name}</span>
-				<span className="w-16">{points} pts</span>
+				<span className="grow ml-4 text-grey-700">{name}</span>
+				<span className="w-16 text-grey-700">{points} pts</span>
 			</li>
 		);
 	}
@@ -63,13 +63,11 @@ export const TaskItem = ({ id, name, points, completed }: TaskItem) => {
 			className="flex flex-row items-center py-2 border-[1px] border-grey-300"
 			key={id}
 		>
-			<form onSubmit={e => handleCompleteTask(e)}>
+			<form onSubmit={e => handleCompleteTask(e)} className="mx-3">
 				<button
 					className="m-1  border-2 border-grey-700 h-6 w-6 rounded-full p-1"
 					type="submit"
-				>
-					{/* <CheckmarkIcon className="h-5 w-auto text-white" /> */}
-				</button>
+				></button>
 			</form>
 			<span className="grow ml-4">{name}</span>
 			<span className="w-16">{points} pts</span>

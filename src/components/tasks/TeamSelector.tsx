@@ -34,7 +34,7 @@ export const TeamSelector = ({
 			<h2 className="text-poppins text-xl underline mt-6 mb-4">
 				Filter by Household Member
 			</h2>
-			<div className="grid grid-cols-4">
+			<div className="grid grid-cols-4 md:grid-cols-6">
 				{team.map(member => {
 					return (
 						<div
@@ -66,21 +66,23 @@ export const TeamSelector = ({
 						</div>
 					);
 				})}
-				<div
-					className={`flex flex-col items-center justify-center border-4  h-[76px] w-[76px]  rounded-full ${
-						selectedMember === 'both'
-							? 'border-pink'
-							: 'border-transparent'
-					}`}
-					onClick={() => handleChange('both')}
-				>
-					<Image
-						src="/images/fairtaskapp-with-whitespace.png"
-						alt="both"
-						width={72}
-						height={72}
-						className="rounded-full bg-green"
-					/>
+				<div className="flex items-center justify-center">
+					<div
+						className={`flex flex-col items-center justify-center border-4  h-[76px] w-[76px]  rounded-full ${
+							selectedMember === 'both'
+								? 'border-pink'
+								: 'border-transparent'
+						}`}
+						onClick={() => handleChange('both')}
+					>
+						<Image
+							src="/images/fairtaskapp-with-whitespace.png"
+							alt="both"
+							width={72}
+							height={72}
+							className="rounded-full bg-green"
+						/>
+					</div>
 				</div>
 			</div>
 		</div>

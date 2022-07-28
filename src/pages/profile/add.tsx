@@ -60,29 +60,36 @@ const AddHouseholdMember: NextPageWithLayout = () => {
 	});
 
 	return (
-		<>
-			<div className="p-4">
+		<div className="flex flex-col items-center justify-center">
+			<div className="p-4 md:max-w-2xl w-full">
 				<h1 className="text-xl  font-poppins">Add Household Member</h1>
 				<div className="border-[1px] border-grey-100 mt-10 mb-12 p-4 shadow-md">
 					<form onSubmit={onSubmitName}>
 						<div className=" p-2 flex flex-col">
-							<div className="flex flex-row">
-								<label htmlFor="title">Name</label>
+							<div className="flex flex-row mt-4">
+								<label htmlFor="title">Email</label>
 								<input
 									{...register('email', { required: true })}
-									className="border-[1px] border-grey-700 "
+									className="ml-2 border-[1px] border-grey-700 w-full"
 								/>
 							</div>
+							<p className="mt-4">
+								Please enter the email of the person you wish to invite
+								to your household. When they login, they will be able to
+								accept.
+							</p>
 						</div>
-						<div>
+						<div className="my-4">
 							<FormButton>Send Invite</FormButton>
-							{isSubmitSuccessful ? 'Name update' : ''}
+							<span className="ml-4">
+								{isSubmitSuccessful ? 'Invite sent!' : ''}
+							</span>
 						</div>
 						<div>{errors.email && errors.email.message}</div>
 					</form>
 				</div>
 			</div>
-		</>
+		</div>
 	);
 };
 

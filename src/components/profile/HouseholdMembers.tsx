@@ -27,7 +27,7 @@ export const HouseholdMembers = ({
 			<h2 className="text-poppins text-xl underline mt-6 mb-4">
 				Household Members
 			</h2>
-			<div className="grid grid-cols-4">
+			<div className="grid grid-cols-4 md:grid-cols-6">
 				{team.map(member => {
 					return (
 						<div
@@ -51,7 +51,7 @@ export const HouseholdMembers = ({
 					);
 				})}
 				{showAddMember && (
-					<div>
+					<div className="flex justify-center">
 						<Link href="/profile/add">
 							<button className="w-20 h-20  flex items-center justify-center">
 								<PlusIcon className="text-green h-10 w-auto" />

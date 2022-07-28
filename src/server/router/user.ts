@@ -38,6 +38,21 @@ export const userRouter = createRouter()
 			});
 		},
 	})
+	.query('getPoints', {
+		input: z.object({
+			userId: z.string().cuid(),
+		}),
+		async resolve({ input, ctx }) {
+			return ctx.prisma.user.findUnique({
+				where: {
+					id: input.userId,
+				},
+				select: {
+					points: true,
+				},
+			});
+		},
+	})
 	.mutation('updateName', {
 		input: z.object({
 			userId: z.string().cuid(),

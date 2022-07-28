@@ -41,42 +41,48 @@ const Tasks: NextPageWithLayout = () => {
 	}
 
 	return (
-		<div className="min-h-screen">
-			<div>
-				<TasksHeader
-					title="Tasks"
-					buttonType="add"
-					buttonCallback={handleAdd}
-				/>
-			</div>
-			<div className="px-4">
-				<TeamSelector
-					selectedMember={selectedMember}
-					setSelectedMember={setSelectedMember}
-				/>
-			</div>
-			<div className="mt-6">
-				<h2 className="bg-green-400 text-white text-3xl leading p-10 py-2">
-					To-Do
-				</h2>
-			</div>
-			<div>
-				<ul>
-					{tasks?.map(task => {
-						return (
-							<TaskItem
-								key={task.id}
-								id={task.id}
-								name={task.name}
-								points={task.value}
-								completed={task.completed}
-							/>
-						);
-					})}
-				</ul>
-			</div>
+		<div className="min-h-screen flex flex-col items-center">
+			<div className="flex flex-col items-center max-w-5xl w-full">
+				<div className="w-full">
+					<TasksHeader
+						title="Tasks"
+						buttonType="add"
+						buttonCallback={handleAdd}
+					/>
+				</div>
+				<div className="px-4 w-full">
+					<TeamSelector
+						selectedMember={selectedMember}
+						setSelectedMember={setSelectedMember}
+					/>
+				</div>
+				<div className="mt-6 w-full">
+					<h2
+						className={`${
+							tasks?.length === 0 ? 'bg-green-200' : 'bg-green-400'
+						} text-white text-3xl leading p-10 py-2 shadow-md`}
+					>
+						{`${tasks?.length === 0 ? '0 Tasks is Queue' : 'To-Do'}`}
+					</h2>
+				</div>
+				<div className="w-full">
+					<ul>
+						{tasks?.map(task => {
+							return (
+								<TaskItem
+									key={task.id}
+									id={task.id}
+									name={task.name}
+									points={task.value}
+									completed={task.completed}
+								/>
+							);
+						})}
+					</ul>
+				</div>
 
-			<MobileMenu />
+				<MobileMenu />
+			</div>
 		</div>
 	);
 };

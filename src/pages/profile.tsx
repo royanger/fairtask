@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { signOut } from 'next-auth/react';
 import Image from 'next/image';
 import { unstable_getServerSession as getServerSession } from 'next-auth';
@@ -9,7 +10,7 @@ import Link from 'next/link';
 import { useHydratedSession, useUserInfoCheck } from '@utils/customHooks';
 import { NextPageWithLayout } from './_app';
 import { authOptions } from './api/auth/[...nextauth]';
-import { EditIcon, LogoutIcon, PlusIcon } from '@components/icons';
+import { EditIcon, LogoutIcon, PlusIcon, StarIcon } from '@components/icons';
 import Layout from '@components/ui/layout';
 import { ProfileButton } from '@components/ui/ProfileButton';
 import { displayToast } from '@utils/displayToast';
@@ -18,17 +19,41 @@ import { ImportNotification } from '@components/profile/InviteNotification';
 import { HouseholdMembers } from '@components/profile/HouseholdMembers';
 
 const Profile: NextPageWithLayout = () => {
+	const [tasks, setTasks] = React.useState(0);
 	const session = useHydratedSession();
 	const { isLoading, userInfo } = useUserInfoCheck(session.user.id);
+	const { data: pts, isLoading: isLoadingPoints } = trpc.useQuery([
+		'user.getPoints',
+		{ userId: session.user.id },
+	]);
+	const { data: taskResults, isLoading: isLoadingTasks } = trpc.useQuery(
+		[
+			'tasks.getAllTasks',
+			{ userId: session.user.id, assigned: session.user.id },
+		],
+		{
+			onSuccess: data => {
+				setTasks(
+					data.filter(task => {
+						return task.completed === false;
+					}).length
+				);
+			},
+		}
+	);
 
 	if (!isLoading && userInfo.hasEmail === false) {
 		displayToast();
 	}
 
 	return (
-		<>
-			<div className="p-4">
-				<h1 className="text-xl  font-poppins">Your Account</h1>
+		<div className="flex flex-col items-center">
+			<div className="p-4  md:max-w-5xl w-full">
+				<h1 className="text-xl  font-poppins">
+					{session.user.name
+						? `Hi, ${session.user.name.split(' ')[0]}`
+						: 'Hi!'}
+				</h1>
 				<div className="relative">
 					<div className="flex items-center justify-center pt-7 ">
 						<div className="border-2 border-grey rounded-full w-[74px] h-[74px]">
@@ -52,9 +77,20 @@ const Profile: NextPageWithLayout = () => {
 					</div>
 				</div>
 				<div className="flex flex-col items-center justify-center mt-5">
-					<h2 className="font-poppins text-xl">{session?.user?.name}</h2>
-					<p className="text-sm text-grey-700 font-inter">
-						{session?.user?.email}
+					<h2 className="font-poppins text-xl">
+						{!isLoadingPoints && (
+							<div className="font-sfprodisplay text-green flex flex-row items-center">
+								<StarIcon className="text-yellow-500 h-5 w-auto mr-2" />
+								{pts?.points} pts
+							</div>
+						)}
+					</h2>
+					<p className="text-sm font-inter">
+						{!isLoadingTasks && (
+							<div className="flex flex-row items-center mt-1">
+								{tasks} Task{tasks === 1 ? '' : 's'}
+							</div>
+						)}
 					</p>
 				</div>
 
@@ -72,13 +108,17 @@ const Profile: NextPageWithLayout = () => {
 					</div>
 				</div>
 				<div className="grid grid-cols-2 gap-4 mt-4">
-					<ProfileButton icon="checkmark">Add a Task</ProfileButton>
-					<ProfileButton icon="star">Add a Reward</ProfileButton>
+					<ProfileButton icon="checkmark" type="addtask">
+						Add a Task
+					</ProfileButton>
+					<ProfileButton icon="star" type="addreward">
+						Add a Reward
+					</ProfileButton>
 				</div>
 				<ImportNotification />
 				<HouseholdMembers />
 			</div>
-		</>
+		</div>
 	);
 };
 

@@ -1,6 +1,5 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import LoginButton from '@components/ui/login-button';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -12,7 +11,7 @@ type TechnologyCardProps = {
 
 const Home: NextPage = () => {
 	return (
-		<>
+		<div className="flex flex-col items-center">
 			<Head>
 				<title>Fair Task App</title>
 				<meta
@@ -21,7 +20,7 @@ const Home: NextPage = () => {
 				/>
 				<link rel="icon" href="/images/favicons/favicon.ico" />
 			</Head>
-			<header className="flex flex-row mt-4 mb-2">
+			<header className="flex flex-row mt-4 mb-2 md:max-w-md">
 				<div className="ml-8">
 					<Image
 						src="/images/fairtaskapp.png"
@@ -34,7 +33,7 @@ const Home: NextPage = () => {
 					Fairtask
 				</div>
 			</header>
-			<main>
+			<main className="md:max-w-md">
 				<div>
 					<Image
 						src="/images/landing-page.png"
@@ -65,10 +64,8 @@ const Home: NextPage = () => {
 						</button>
 					</Link>
 				</div>
-
-				<LoginButton />
 			</main>
-		</>
+		</div>
 	);
 };
 
