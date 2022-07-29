@@ -22,15 +22,19 @@ const Profile: NextPageWithLayout = () => {
 	const [tasks, setTasks] = React.useState(0);
 	const session = useHydratedSession();
 	const { isLoading, userInfo } = useUserInfoCheck(session.user.id);
+
 	const { data: pts, isLoading: isLoadingPoints } = trpc.useQuery([
 		'user.getPoints',
 		{ userId: session.user.id },
 	]);
+
+	const { data: team } = trpc.useQuery([
+		'user.getTeam',
+		{ userId: session.user.id },
+	]);
+
 	const { data: taskResults, isLoading: isLoadingTasks } = trpc.useQuery(
-		[
-			'tasks.getAllTasks',
-			{ userId: session.user.id, assigned: session.user.id },
-		],
+		['tasks.getAllTasks', { teamId: team?.teamId! }],
 		{
 			onSuccess: data => {
 				setTasks(

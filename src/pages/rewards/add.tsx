@@ -10,13 +10,14 @@ import { FormButton } from '@components/ui/FormButton';
 import { AssignMember } from '@components/tasks/AssignMember';
 import { useForm } from 'react-hook-form';
 import { CategorySelector } from '@components/rewards/CategorySelector';
+import { trpc } from '@utils/trpc';
+import Image from 'next/image';
+import Router from 'next/router';
 
 interface FormData {
 	title: string;
-	description: string;
-	date: Date;
 	value: number;
-	assignedMember: string;
+	selectedCategory: string;
 }
 
 const AddRewards: NextPageWithLayout = () => {
@@ -27,15 +28,21 @@ const AddRewards: NextPageWithLayout = () => {
 		displayToast();
 	}
 
-	const handleAdd = () => {
-		console.log('adding');
-	};
+	const { data: team } = trpc.useQuery([
+		'user.getTeam',
+		{ userId: session.user.id },
+	]);
+
+	const createRewardMutation = trpc.useMutation(['rewards.createReward'], {
+		onSuccess: () => {
+			Router.push('/rewards');
+		},
+	});
+
+	const handleAdd = () => {};
 	const {
 		register,
 		handleSubmit,
-		control,
-		watch,
-		setValue,
 		formState: { errors },
 	} = useForm<FormData>({
 		defaultValues: {
@@ -44,20 +51,12 @@ const AddRewards: NextPageWithLayout = () => {
 	});
 
 	const onSubmit = handleSubmit(async data => {
-		const assignedId =
-			data.assignedMember === 'both' ? null : data.assignedMember;
-
-		console.log(data);
-
-		// await addTaskMutation.mutate({
-		// 	userId: session.user.id,
-		// 	title: data.title,
-		// 	description: data.description,
-		// 	value: data.value,
-		// 	date: data.date,
-		// 	teamId: team?.teamId!,
-		// 	assigned: assignedId,
-		// });
+		await createRewardMutation.mutate({
+			title: data.title,
+			points: +data.value,
+			categoryId: data.selectedCategory,
+			teamId: team?.teamId!,
+		});
 	});
 
 	return (
@@ -69,6 +68,14 @@ const AddRewards: NextPageWithLayout = () => {
 			/>
 			<div className="flex flex-col items-center">
 				<div className="max-w-5xl w-full">
+					<div className="mt-4">
+						<Image
+							src="/images/claim-reward.png"
+							width={408}
+							height={312}
+							alt="Create a new reward"
+						/>
+					</div>
 					<form onSubmit={onSubmit} className="px-2 ">
 						<div className="py-4 px-3 flex flex-col rounded-3xl mb-4">
 							<div className="flex flex-row mb-6">
@@ -84,10 +91,10 @@ const AddRewards: NextPageWithLayout = () => {
 
 							<div className="flex flex-row">
 								<label htmlFor="description" className="mr-2 sr-only">
-									Description
+									Points Needed
 								</label>
 								<input
-									{...register('description', { required: true })}
+									{...register('value', { required: true })}
 									placeholder="Points needed"
 									className="border-green border-b-2 w-full py-1 px-2 text-grey-900 text-xl"
 								/>
@@ -95,7 +102,7 @@ const AddRewards: NextPageWithLayout = () => {
 						</div>
 						<CategorySelector register={register} />
 
-						<div className="flex items-center justify-center">
+						<div className="flex items-center justify-center mb-20">
 							<FormButton>Submit</FormButton>
 						</div>
 					</form>

@@ -53,6 +53,22 @@ export const userRouter = createRouter()
 			});
 		},
 	})
+	.mutation('adjustPoints', {
+		input: z.object({
+			userId: z.string().cuid(),
+			points: z.number(),
+		}),
+		async resolve({ input, ctx }) {
+			return await ctx.prisma.user.update({
+				where: {
+					id: input.userId,
+				},
+				data: {
+					points: input.points,
+				},
+			});
+		},
+	})
 	.mutation('updateName', {
 		input: z.object({
 			userId: z.string().cuid(),
