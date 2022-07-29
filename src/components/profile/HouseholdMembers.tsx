@@ -20,7 +20,24 @@ export const HouseholdMembers = ({
 
 	if (isLoading) return null;
 
-	if (!team) return <div>No team exists</div>;
+	if (!team) {
+		return (
+			<div className="">
+				<h2 className="text-poppins text-xl underline mt-6 mb-4">
+					Household Members
+				</h2>
+				<div className="grid grid-cols-4 md:grid-cols-6">
+					<div className="flex justify-center">
+						<Link href="/profile/add">
+							<button className="w-20 h-20  flex items-center justify-center">
+								<PlusIcon className="text-green h-10 w-auto" />
+							</button>
+						</Link>
+					</div>
+				</div>
+			</div>
+		);
+	}
 
 	return (
 		<div className="">
