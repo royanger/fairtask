@@ -15,6 +15,7 @@ import { TeamSelector } from '@components/tasks/TeamSelector';
 import Layout from '@components/ui/layout';
 import { TaskItem } from '@components/tasks/TaskItem';
 import Link from 'next/link';
+import { Spinner } from '@components/ui/Spinner';
 
 const Tasks: NextPageWithLayout = () => {
 	const [selectedMember, setSelectedMember] = React.useState('both');
@@ -43,7 +44,7 @@ const Tasks: NextPageWithLayout = () => {
 		return Router.push('/tasks/add');
 	}
 
-	if (isLoadingTeam || isLoadingTasks) return null;
+	if (isLoadingTeam || isLoadingTasks) return <Spinner />;
 
 	if (!isLoadingTeam && userTeam?.teamId === null) {
 		return (

@@ -11,6 +11,7 @@ import { displayToast } from '@utils/displayToast';
 import { trpc } from '@utils/trpc';
 import { FormButton } from '@components/ui/FormButton';
 import Link from 'next/link';
+import { Spinner } from '@components/ui/Spinner';
 
 const Rewards: NextPageWithLayout = () => {
 	const session = useHydratedSession();
@@ -48,8 +49,8 @@ const Rewards: NextPageWithLayout = () => {
 	function handleAdd() {
 		return Router.push('/rewards/add');
 	}
-
-	if (isLoadingTeam || isLoadingCats || isLoadingRewards) return null;
+	console.log('test', isLoadingRewards);
+	if (isLoadingTeam || isLoadingCats || isLoadingRewards) return <Spinner />;
 
 	if (!isLoadingTeam && team?.teamId === null) {
 		return (
