@@ -64,3 +64,8 @@ body {
 	outline: 4px solid #eea1c5;
 	border-radius: 9999px;
 }
+.categories [type='radio']:checked + span,
+.categories [type='radio']:checked + div {
+	outline: 4px solid rgba(50, 70, 70, 0.5);
+	border-radius: 9999px;
+}

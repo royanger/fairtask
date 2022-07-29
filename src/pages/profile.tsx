@@ -15,7 +15,7 @@ import Layout from '@components/ui/layout';
 import { ProfileButton } from '@components/ui/ProfileButton';
 import { displayToast } from '@utils/displayToast';
 import { trpc } from '@utils/trpc';
-import { ImportNotification } from '@components/profile/InviteNotification';
+import { InviteNotification } from '@components/profile/InviteNotification';
 import { HouseholdMembers } from '@components/profile/HouseholdMembers';
 
 const Profile: NextPageWithLayout = () => {
@@ -115,7 +115,7 @@ const Profile: NextPageWithLayout = () => {
 						Add a Reward
 					</ProfileButton>
 				</div>
-				<ImportNotification />
+				<InviteNotification />
 				<HouseholdMembers />
 			</div>
 		</div>

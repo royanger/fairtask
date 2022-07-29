@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { PlusIcon } from '../icons';
 
 interface RewardHeader {
@@ -13,17 +14,35 @@ export default function RewardHeader({
 }: RewardHeader) {
 	return (
 		<>
-			<div className=" flex items-center justify-start p-2">
-				<div className="">
-					<h1 className="text-xl font-bold leading-[45px]">{title}</h1>
+			<div className="flex flex-col items-center w-full">
+				<div className="flex items-center justify-center p-2 md:max-w-5xl w-full">
+					<div className="relative w-full">
+						<div className="flex flex-row justify-start">
+							<h1 className="text-xl font-bold leading-[45px]">
+								{title}
+							</h1>
+						</div>
+						<div className="absolute top-0 right-0 p-2">
+							<button
+								className="bg-green border-0 rounded-full p-2"
+								onClick={() => buttonCallback()}
+							>
+								{buttonType === 'link' ? (
+									'Save'
+								) : (
+									<PlusIcon className="text-white w-5 h-5" />
+								)}
+							</button>
+						</div>
+					</div>
 				</div>
-				<div className="absolute  top-0 right-0 p-2 ">
-					<button
-						className="bg-green border-0 rounded-full p-2"
-						onClick={() => buttonCallback()}
-					>
-						<PlusIcon className="text-white w-5 h-5" />
-					</button>
+				<div className="mt-4">
+					<Image
+						src="/images/claim-reward.png"
+						width={408}
+						height={312}
+						alt="Create a new reward"
+					/>
 				</div>
 			</div>
 		</>

@@ -8,10 +8,21 @@ import Image from 'next/image';
 import RewardHeader from '@components/rewards/RewardsHeader';
 import Router from 'next/router';
 import { displayToast } from '@utils/displayToast';
+import { trpc } from '@utils/trpc';
+import { FormButton } from '@components/ui/FormButton';
 
 const Rewards: NextPageWithLayout = () => {
 	const session = useHydratedSession();
 	const { isLoading, userInfo } = useUserInfoCheck(session.user.id);
+
+	// const createCatMutation = trpc.useMutation(['cats.createCat']);
+
+	// const handleClick = () => {
+	// 	createCatMutation.mutate({
+	// 		name: 'Wildcard',
+	// 		image: 'wildcard.png',
+	// 	});
+	// };
 
 	if (!isLoading && userInfo.hasEmail === false) {
 		displayToast();

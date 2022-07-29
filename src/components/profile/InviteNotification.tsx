@@ -3,7 +3,7 @@ import { useHydratedSession } from '@utils/customHooks';
 import { trpc } from '@utils/trpc';
 import Link from 'next/link';
 
-export const ImportNotification = () => {
+export const InviteNotification = () => {
 	const session = useHydratedSession();
 
 	const { data: invites, isLoading } = trpc.useQuery([
