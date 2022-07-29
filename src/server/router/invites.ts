@@ -51,4 +51,16 @@ export const inviteRouter = createRouter()
 				},
 			});
 		},
+	})
+	.mutation('declineInvite', {
+		input: z.object({
+			inviteId: z.string().cuid(),
+		}),
+		async resolve({ input, ctx }) {
+			await ctx.prisma.invites.delete({
+				where: {
+					id: input.inviteId,
+				},
+			});
+		},
 	});

@@ -8,9 +8,11 @@ import { authOptions } from '../api/auth/[...nextauth]';
 import Layout from '@components/ui/layout';
 import { trpc } from '@utils/trpc';
 import Image from 'next/image';
+import Router from 'next/router';
 
 const AddHouseholdMember: NextPageWithLayout = () => {
 	const session = useHydratedEmailSession();
+	const utils = trpc.useContext();
 
 	const { data: invites } = trpc.useQuery([
 		'invites.getInvites',
@@ -20,13 +22,36 @@ const AddHouseholdMember: NextPageWithLayout = () => {
 	const acceptInviteMutation = trpc.useMutation(['invites.acceptInvite']);
 
 	function handleAcceptInvite(teamId: string, inviteId: string) {
-		console.log('test');
+		acceptInviteMutation.mutate(
+			{
+				userId: session.user.id,
+				teamId: teamId,
+				inviteId: inviteId,
+			},
+			{
+				onSuccess: () => {
+					Router.push('/profile');
+				},
+			}
+		);
+	}
 
-		acceptInviteMutation.mutate({
-			userId: session.user.id,
-			teamId: teamId,
-			inviteId: inviteId,
-		});
+	const declineInviteMutation = trpc.useMutation(['invites.declineInvite']);
+
+	function handleDeclineInvite(inviteId: string) {
+		declineInviteMutation.mutate(
+			{
+				inviteId: inviteId,
+			},
+			{
+				onSuccess: () => {
+					utils.invalidateQueries([
+						'invites.getInvites',
+						{ email: session.user.email },
+					]);
+				},
+			}
+		);
 	}
 
 	const DisplayInvites = () => {
@@ -67,7 +92,10 @@ const AddHouseholdMember: NextPageWithLayout = () => {
 									>
 										Accept
 									</button>
-									<button className="bg-green py-2 px-6 text-white text-sm rounded-3xl mt-2">
+									<button
+										className="bg-green py-2 px-6 text-white text-sm rounded-3xl mt-2"
+										onClick={() => handleDeclineInvite(invite.id)}
+									>
 										Decline
 									</button>
 								</div>
@@ -81,14 +109,16 @@ const AddHouseholdMember: NextPageWithLayout = () => {
 
 	return (
 		<>
-			<div className="p-4">
-				<h1 className="text-xl  font-poppins">Pending Invitations</h1>
-				<div className="border-[1px] border-grey-100 mt-10 mb-12 p-4 shadow-md">
-					{invites && invites?.length > 0 ? (
-						<DisplayInvites />
-					) : (
-						<div className="">There are no pending invites.</div>
-					)}
+			<div className="p-4 flex flex-col items-center">
+				<div className="w-full max-w-5xl">
+					<h1 className="text-xl  font-poppins">Pending Invitations</h1>
+					<div className="border-[1px] border-grey-100 mt-10 mb-12 p-4 shadow-md">
+						{invites && invites?.length > 0 ? (
+							<DisplayInvites />
+						) : (
+							<div className="">There are no pending invites.</div>
+						)}
+					</div>
 				</div>
 			</div>
 		</>
