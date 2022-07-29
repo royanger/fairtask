@@ -24,7 +24,24 @@ export const rewardsRouter = createRouter()
 		async resolve({ input, ctx }) {
 			return ctx.prisma.reward.findMany({
 				where: {
-					teamId: input.teamId,
+					AND: [
+						{
+							teamId: input.teamId,
+						},
+						{ claimed: false },
+					],
+				},
+			});
+		},
+	})
+	.query('getClaimedRewards', {
+		input: z.object({
+			userId: z.string().cuid(),
+		}),
+		async resolve({ input, ctx }) {
+			return ctx.prisma.reward.findMany({
+				where: {
+					claimedById: input.userId,
 				},
 			});
 		},
@@ -50,6 +67,7 @@ export const rewardsRouter = createRouter()
 	.mutation('claimReward', {
 		input: z.object({
 			rewardId: z.string().cuid(),
+			userId: z.string().cuid(),
 		}),
 		async resolve({ input, ctx }) {
 			return await ctx.prisma.reward.update({
@@ -58,6 +76,7 @@ export const rewardsRouter = createRouter()
 				},
 				data: {
 					claimed: true,
+					claimedById: input.userId,
 				},
 			});
 		},

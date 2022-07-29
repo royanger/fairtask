@@ -17,6 +17,7 @@ import { displayToast } from '@utils/displayToast';
 import { trpc } from '@utils/trpc';
 import { InviteNotification } from '@components/profile/InviteNotification';
 import { HouseholdMembers } from '@components/profile/HouseholdMembers';
+import { Spinner } from '@components/ui/Spinner';
 
 const Profile: NextPageWithLayout = () => {
 	const [tasks, setTasks] = React.useState(0);
@@ -30,6 +31,15 @@ const Profile: NextPageWithLayout = () => {
 
 	const { data: team } = trpc.useQuery([
 		'user.getTeam',
+		{ userId: session.user.id },
+	]);
+
+	const { data: cats, isLoading: isLoadingCats } = trpc.useQuery([
+		'rewards.getCats',
+	]);
+
+	const { data: rewards, isLoading: isLoadingRewards } = trpc.useQuery([
+		'rewards.getClaimedRewards',
 		{ userId: session.user.id },
 	]);
 
@@ -121,6 +131,42 @@ const Profile: NextPageWithLayout = () => {
 				</div>
 				<InviteNotification />
 				<HouseholdMembers />
+			</div>
+			<div className="flex flex-col justify-center w-full max-w-5xl">
+				<h2 className="mt-10 mb-6 text-2xl">Rewards</h2>
+				{isLoadingRewards && <Spinner />}
+				{!isLoadingRewards && rewards && rewards?.length > 0 ? (
+					<ul className="w-full px-2">
+						{rewards?.map(reward => {
+							return (
+								<li key={reward.id} className="mb-4">
+									<div className="border-[1px] border-y-grey-100 rounded-2xl flex flex-row items-center w-full py-2 px-4">
+										<div className="mr-2">
+											<Image
+												src={`/images/categories/${
+													cats?.filter(
+														cat => cat.id === reward.categoryId
+													)[0]!.image
+												}`}
+												width={50}
+												height={50}
+												alt={reward.title}
+											/>
+										</div>
+										<div className="grow flex flex-col items-start w-full">
+											<p className="">{reward.title}</p>
+											<p className="font-inter">
+												Required: {reward.points} points
+											</p>
+										</div>
+									</div>
+								</li>
+							);
+						})}
+					</ul>
+				) : (
+					'No rewards claimed'
+				)}
 			</div>
 		</div>
 	);

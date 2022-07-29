@@ -9,13 +9,13 @@ import RewardHeader from '@components/rewards/RewardsHeader';
 import Router from 'next/router';
 import { displayToast } from '@utils/displayToast';
 import { trpc } from '@utils/trpc';
-import { FormButton } from '@components/ui/FormButton';
 import Link from 'next/link';
 import { Spinner } from '@components/ui/Spinner';
 
 const Rewards: NextPageWithLayout = () => {
 	const session = useHydratedSession();
 	const { isLoading, userInfo } = useUserInfoCheck(session.user.id);
+	const utils = trpc.useContext();
 
 	const { data: pts, isLoading: isLoadingPoints } = trpc.useQuery([
 		'user.getPoints',
@@ -36,10 +36,32 @@ const Rewards: NextPageWithLayout = () => {
 		{ teamId: team?.teamId! },
 	]);
 
-	const claimRewardMutation = trpc.useMutation(['rewards.claimReward']);
+	const adjustPointsMutation = trpc.useMutation(['user.adjustPoints']);
+	const claimRewardMutation = trpc.useMutation(['rewards.claimReward'], {
+		onSuccess(data) {
+			adjustPointsMutation.mutate(
+				{
+					userId: session.user.id,
+					points: pts?.points! + data.points,
+				},
+				{
+					onSuccess() {
+						utils.invalidateQueries([
+							'user.getPoints',
+							{ userId: session.user.id },
+						]);
+						utils.invalidateQueries([
+							'rewards.getRewards',
+							{ teamId: team?.teamId! },
+						]);
+					},
+				}
+			);
+		},
+	});
 
 	const handleClaimReward = (id: string, points: number) => {
-		console.log('claim reward');
+		claimRewardMutation.mutate({ rewardId: id, userId: session.user.id });
 	};
 
 	if (!isLoading && userInfo.hasEmail === false) {
@@ -49,7 +71,7 @@ const Rewards: NextPageWithLayout = () => {
 	function handleAdd() {
 		return Router.push('/rewards/add');
 	}
-	console.log('test', isLoadingRewards);
+
 	if (isLoadingTeam || isLoadingCats || isLoadingRewards) return <Spinner />;
 
 	if (!isLoadingTeam && team?.teamId === null) {
@@ -117,7 +139,15 @@ const Rewards: NextPageWithLayout = () => {
 											</p>
 										</div>
 										<div>
-											<button className="bg-green rounded-3xl py-2 px-4 text-white">
+											<button
+												className="bg-green rounded-3xl py-2 px-4 text-white"
+												onClick={() =>
+													handleClaimReward(
+														reward.id,
+														reward.points
+													)
+												}
+											>
 												Claim
 											</button>
 										</div>
