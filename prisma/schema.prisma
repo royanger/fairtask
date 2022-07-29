@@ -48,6 +48,7 @@ model User {
   tasks           Task[]      @relation("owner")
   assigned        Task[]      @relation("assigned")
   invites         Invites[]
+  rewards         Reward[]
   teamId          String?
   points          Int         @default(0)
   team            Team?       @relation(fields: [teamId], references: [id])
@@ -66,6 +67,7 @@ model Team {
    creator     String
    user        User[]
    task        Task[]
+   reward      Reward[]
 }
 
 model Task {
@@ -87,8 +89,13 @@ model Reward {
    id          String            @id @default(cuid())
    title       String
    points      Int
+   claimed     Boolean           @default(false)
    categoryId  String
    category    RewardCategory    @relation(fields: [categoryId], references: [id])
+   teamId      String
+   team        Team              @relation(fields: [teamId], references: [id])
+   claimedById String?
+   claimedBy   User?             @relation(fields: [claimedById], references: [id])
 }
 
 model RewardCategory {
