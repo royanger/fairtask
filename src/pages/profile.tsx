@@ -134,7 +134,6 @@ const Profile: NextPageWithLayout = () => {
 			</div>
 			<div className="flex flex-col justify-center w-full max-w-5xl">
 				<h2 className="mt-10 mb-6 text-2xl">Rewards</h2>
-				{isLoadingRewards && <Spinner />}
 				{!isLoadingRewards && rewards && rewards?.length > 0 ? (
 					<ul className="w-full px-2">
 						{rewards?.map(reward => {

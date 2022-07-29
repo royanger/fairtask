@@ -1,4 +1,5 @@
 import type { NextPage } from 'next';
+import { useSession } from 'next-auth/react';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -10,6 +11,8 @@ type TechnologyCardProps = {
 };
 
 const Home: NextPage = () => {
+	const session = useSession();
+
 	return (
 		<div className="flex flex-col items-center">
 			<Head>
@@ -52,17 +55,30 @@ const Home: NextPage = () => {
 				</div>
 				<div className="flex items-center justify-center mb-6">
 					<Link href="/login">
-						<button className="bg-green text-white font-poppins text-xl px-20 py-3 rounded-[75px]">
-							Get Started
-						</button>
+						{session && session.data && session.data.user ? (
+							<Link href="/profile">
+								<button className="bg-green text-white font-poppins text-xl px-20 py-3 rounded-[75px]">
+									{' '}
+									Go to Dashboard
+								</button>
+							</Link>
+						) : (
+							<button className="bg-green text-white font-poppins text-xl px-20 py-3 rounded-[75px]">
+								Get Started
+							</button>
+						)}
 					</Link>
 				</div>
 				<div className="flex items-center justify-center">
-					<Link href="/login">
-						<button className="text-green underline font-inter">
-							Existing account? Log in
-						</button>
-					</Link>
+					{session && session.data && session.data.user ? (
+						''
+					) : (
+						<Link href="/login">
+							<button className="text-green underline font-inter">
+								Existing account? Log in
+							</button>
+						</Link>
+					)}
 				</div>
 			</main>
 		</div>
