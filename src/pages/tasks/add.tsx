@@ -70,8 +70,6 @@ const AddTask: NextPageWithLayout = () => {
 	});
 
 	const handleValueChange = (type: string) => {
-		// const currValue = watch('value');
-		console.log('watch', typeof watch('value'));
 		let newValue = 0;
 		if (type === 'increment') newValue = watch('value') + 5;
 		if (type === 'decrement') newValue = watch('value') - 5;
@@ -117,7 +115,7 @@ const AddTask: NextPageWithLayout = () => {
 						<input
 							{...register('value', {
 								required: true,
-								min: { value: 0, message: 'too low' },
+								min: { value: 1, message: 'too low' },
 								max: 99999999,
 							})}
 							type="number"
@@ -166,6 +164,35 @@ const AddTask: NextPageWithLayout = () => {
 						<FormButton>Submit</FormButton>
 					</div>
 				</form>
+				<div
+					className={`${
+						Object.keys(errors).length > 0
+							? ' border-red-500'
+							: 'border-transparent'
+					} border-2 rounded-xl py-4 px-6 mt-10`}
+				>
+					{Object.keys(errors).length > 0 && (
+						<>
+							<h3 className="font-bold text-xl">
+								Please correct the following errors:
+							</h3>
+							<ul>
+								{errors.title && <li className="my-2">Set a title</li>}
+								{errors.title && (
+									<li className="my-2">Enter a description</li>
+								)}
+								{errors.title && (
+									<li className="my-2">Enter a value</li>
+								)}
+								{errors.title && (
+									<li className="my-2">
+										Select whom the task is assigned to
+									</li>
+								)}
+							</ul>
+						</>
+					)}
+				</div>
 			</div>
 		</div>
 	);

@@ -14,9 +14,10 @@ import TasksHeader from '@components/tasks/TasksHeader';
 import { TeamSelector } from '@components/tasks/TeamSelector';
 import Layout from '@components/ui/layout';
 import { TaskItem } from '@components/tasks/TaskItem';
+import Link from 'next/link';
 
 const Tasks: NextPageWithLayout = () => {
-	const [selectedMember, setSelectedMember] = React.useState(null);
+	const [selectedMember, setSelectedMember] = React.useState('both');
 	const session = useHydratedSession();
 	const { isLoading, userInfo } = useUserInfoCheck(session.user.id);
 
@@ -24,13 +25,15 @@ const Tasks: NextPageWithLayout = () => {
 		displayToast();
 	}
 
-	// TODO this needs to be updated by the household member selection, for
-	// task filtering
-	const { data: tasks } = trpc.useQuery([
+	const { data: userTeam, isLoading: isLoadingTeam } = trpc.useQuery([
+		'user.getTeam',
+		{ userId: session.user.id },
+	]);
+
+	const { data: tasks, isLoading: isLoadingTasks } = trpc.useQuery([
 		'tasks.getAllTasks',
 		{
-			userId: session.user.id,
-			assigned: selectedMember !== 'both' ? selectedMember : null,
+			teamId: userTeam?.teamId!,
 		},
 	]);
 
@@ -38,6 +41,27 @@ const Tasks: NextPageWithLayout = () => {
 	// when adding a task
 	function handleAdd() {
 		return Router.push('/tasks/add');
+	}
+
+	if (isLoadingTeam || isLoadingTasks) return null;
+
+	if (!isLoadingTeam && userTeam?.teamId === null) {
+		return (
+			<div className="flex flex-col items-center">
+				<div className="max-w-2xl w-full my-10">
+					<p>
+						User is not part of a team. Please either accept an invite or
+						invite someone to your household
+					</p>
+
+					<Link href="/profile/invites">
+						<button className="mt-10 bg-green rounded-3xl shadow-md text-white py-2 px-10 text-xl">
+							Invite
+						</button>
+					</Link>
+				</div>
+			</div>
+		);
 	}
 
 	return (
@@ -62,22 +86,52 @@ const Tasks: NextPageWithLayout = () => {
 							tasks?.length === 0 ? 'bg-green-200' : 'bg-green-400'
 						} text-white text-3xl leading p-10 py-2 shadow-md`}
 					>
-						{`${tasks?.length === 0 ? '0 Tasks is Queue' : 'To-Do'}`}
+						{`
+
+                  ${
+							selectedMember === 'both'
+								? tasks?.filter(task => task.completed === false)
+										.length === 0
+									? '0 Tasks in Queue'
+									: 'To-Do'
+								: tasks
+										?.filter(
+											task => task.assignedId === selectedMember
+										)
+										.filter(task => task.completed === false)
+										.length === 0
+								? '0 Tasks in Queue'
+								: 'To-Do'
+						}`}
 					</h2>
 				</div>
 				<div className="w-full">
 					<ul>
-						{tasks?.map(task => {
-							return (
-								<TaskItem
-									key={task.id}
-									id={task.id}
-									name={task.name}
-									points={task.value}
-									completed={task.completed}
-								/>
-							);
-						})}
+						{selectedMember === 'both'
+							? tasks?.map(task => {
+									return (
+										<TaskItem
+											key={task.id}
+											id={task.id}
+											name={task.name}
+											points={task.value}
+											completed={task.completed}
+										/>
+									);
+							  })
+							: tasks
+									?.filter(task => task.assignedId === selectedMember)
+									.map(task => {
+										return (
+											<TaskItem
+												key={task.id}
+												id={task.id}
+												name={task.name}
+												points={task.value}
+												completed={task.completed}
+											/>
+										);
+									})}
 					</ul>
 				</div>
 

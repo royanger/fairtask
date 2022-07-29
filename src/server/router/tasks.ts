@@ -11,33 +11,14 @@ export const tasksRouter = createRouter()
 		}
 		return next();
 	})
-	.query('hello', {
-		input: z
-			.object({
-				text: z.string().nullish(),
-			})
-			.nullish(),
-		resolve({ input }) {
-			return {
-				greeting: `Hello ${input?.text ?? 'world'}`,
-			};
-		},
-	})
-
 	.query('getAllTasks', {
 		input: z.object({
-			userId: z.string().cuid(),
-			assigned: z.string().cuid().nullish(),
+			teamId: z.string().cuid(),
 		}),
 		async resolve({ input, ctx }) {
-			console.log('assigned', input.assigned);
-			const assignedId =
-				input.assigned !== null
-					? [{ userId: input.userId }, { assignedId: input.assigned }]
-					: [{ userId: input.userId }];
 			return await ctx.prisma.task.findMany({
 				where: {
-					AND: assignedId,
+					teamId: input.teamId,
 				},
 				orderBy: [
 					{
@@ -61,7 +42,6 @@ export const tasksRouter = createRouter()
 			assigned: z.string().cuid().nullish(),
 		}),
 		async resolve({ input, ctx }) {
-			console.log('input', input);
 			return await ctx.prisma.task.create({
 				data: {
 					userId: input.userId,
@@ -96,8 +76,6 @@ export const tasksRouter = createRouter()
 			taskId: z.string().cuid(),
 		}),
 		async resolve({ input, ctx }) {
-			console.log('removing complete status');
-
 			return await ctx.prisma.task.update({
 				where: {
 					id: input.taskId,

@@ -13,21 +13,47 @@ export const TaskItem = ({ id, name, points, completed }: TaskItem) => {
 	const session = useHydratedSession();
 	const utils = trpc.useContext();
 
+	const { data: team } = trpc.useQuery([
+		'user.getTeam',
+		{ userId: session.user.id },
+	]);
+
+	const { data: userPoints } = trpc.useQuery([
+		'user.getPoints',
+		{ userId: session.user.id },
+	]);
+
+	const adjustPointsMutation = trpc.useMutation(['user.adjustPoints']);
+
 	const completeTask = trpc.useMutation(['tasks.completeTask'], {
 		onSuccess() {
-			utils.invalidateQueries([
-				'tasks.getAllTasks',
-				{ userId: session.user.id },
-			]);
+			adjustPointsMutation.mutate(
+				{ userId: session.user.id, points: userPoints?.points! + points },
+				{
+					onSuccess() {
+						utils.invalidateQueries([
+							'tasks.getAllTasks',
+							{ teamId: team?.teamId! },
+						]);
+					},
+				}
+			);
 		},
 	});
 
-	const uncompleteTask = trpc.useMutation('tasks.uncompleteTask', {
+	const uncompleteTask = trpc.useMutation(['tasks.uncompleteTask'], {
 		onSuccess() {
-			utils.invalidateQueries([
-				'tasks.getAllTasks',
-				{ userId: session.user.id },
-			]);
+			adjustPointsMutation.mutate(
+				{ userId: session.user.id, points: userPoints?.points! - points },
+				{
+					onSuccess() {
+						utils.invalidateQueries([
+							'tasks.getAllTasks',
+							{ teamId: team?.teamId! },
+						]);
+					},
+				}
+			);
 		},
 	});
 
