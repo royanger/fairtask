@@ -49,7 +49,7 @@ const AddHouseholdMember: NextPageWithLayout = () => {
 
 			addHouseholdMutation.mutate({
 				userId: session.user.id,
-				email: data.email,
+				email: data.email.toLowerCase(),
 			});
 		} else {
 			setErrorName('email', {

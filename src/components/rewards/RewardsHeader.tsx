@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { PlusIcon } from '../icons';
 
 interface RewardHeader {
@@ -35,14 +34,6 @@ export default function RewardHeader({
 							</button>
 						</div>
 					</div>
-				</div>
-				<div className="mt-4">
-					<Image
-						src="/images/claim-reward.png"
-						width={408}
-						height={312}
-						alt="Create a new reward"
-					/>
 				</div>
 			</div>
 		</>

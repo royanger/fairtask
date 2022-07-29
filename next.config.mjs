@@ -15,6 +15,10 @@ function defineNextConfig(config) {
 export default defineNextConfig({
 	reactStrictMode: true,
 	images: {
-		domains: ['pbs.twimg.com', 'avatars.githubusercontent.com'],
+		domains: [
+			'pbs.twimg.com',
+			'abs.twimg.com',
+			'avatars.githubusercontent.com',
+		],
 	},
 });

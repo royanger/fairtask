@@ -1,7 +1,6 @@
 import { Button } from '@components/ui/Button';
 import { useHydratedSession } from '@utils/customHooks';
 import { trpc } from '@utils/trpc';
-import Link from 'next/link';
 
 export const InviteNotification = () => {
 	const session = useHydratedSession();

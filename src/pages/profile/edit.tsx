@@ -80,7 +80,7 @@ const EditProfile: NextPageWithLayout = () => {
 			updateEmailMutation.mutate(
 				{
 					userId: session.user.id,
-					email: data.email,
+					email: data.email.toLowerCase(),
 				},
 				{
 					onSuccess: () => {

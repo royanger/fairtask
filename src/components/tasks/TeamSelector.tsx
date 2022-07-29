@@ -16,7 +16,6 @@ export const TeamSelector = ({
 	const session = useHydratedSession();
 
 	const handleChange = (id: string) => {
-		console.log('working?', id);
 		setSelectedMember(id);
 	};
 

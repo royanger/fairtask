@@ -19,28 +19,28 @@ export const CategorySelector = ({ register }: CategorySelector) => {
 			<div className="flex flex-col items-start mt-5">
 				<div className="">Select Category</div>
 			</div>
-			<div className="grow grid grid-cols-4 md:grid-cols-6 gap-2 gap-y-6 mt-8">
+			<div className="grow grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 gap-y-6 mt-8">
 				{cats?.map(cat => {
 					return (
-						<label
-							key={cat.id}
-							className="flex flex-col items-center justify-center"
-						>
-							<input
-								type="radio"
-								{...register('selectedCategory', { required: true })}
-								id={cat.id}
-								value={cat.id}
-							/>
+						<div key={cat.id} className="flex flex-col items-center">
+							<label className="flex flex-col items-center justify-center">
+								<input
+									type="radio"
+									{...register('selectedCategory', { required: true })}
+									id={cat.id}
+									value={cat.id}
+								/>
 
-							<Image
-								src={`/images/categories/${cat.image}`}
-								alt={`${cat.name} - Category`}
-								width={75}
-								height={75}
-								className="rounded-full"
-							/>
-						</label>
+								<Image
+									src={`/images/categories/${cat.image}`}
+									alt={`${cat.name} - Category`}
+									width={75}
+									height={75}
+									className="rounded-full"
+								/>
+								<p className="mt-2">{cat.name}</p>
+							</label>
+						</div>
 					);
 				})}
 			</div>
